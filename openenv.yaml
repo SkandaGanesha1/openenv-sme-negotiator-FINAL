@@ -29,3 +29,41 @@ tasks:
   - name: payment-terms-hard
     description: Hostile two-buyer consortium — negotiate dynamic discounting; reward uses NPV vs status quo.
     difficulty: hard
+
+---
+spec_version: 1
+version: 0.1.0
+name: openenv-sme-multiagent-world
+description: >
+  Multi-agent world environment for SME payment-term negotiations.
+  Supports four interaction modes: competitive bidding (A), coalition bargaining (B),
+  oversight arena (C), and manager orchestration (D).
+  Designed for LLM control via language actions and observations.
+type: text
+runtime: fastapi
+app: server.world_app:app
+port: 7861
+
+action:
+  type: object
+  description: World action for the active principal agent (SME / oversight / manager).
+  schema_ref: WorldAction
+
+observation:
+  type: object
+  description: Language-centric world observation with partial observability enforced.
+  schema_ref: WorldObservation
+
+tasks:
+  - name: competitive-bidding
+    description: "Mode A — 2-3 SMEs compete for a single buyer's contract. Principal: one SME."
+    difficulty: medium
+  - name: coalition-bargaining
+    description: "Mode B — SMEs form a coalition before negotiating with buyers. Principal: one SME."
+    difficulty: medium
+  - name: oversight-arena
+    description: "Mode C — OversightAgent supervises a fleet of parallel SME-buyer negotiations."
+    difficulty: hard
+  - name: manager-orchestration
+    description: "Mode D — ManagerAgent orchestrates multiple SME agents toward global solvency goals."
+    difficulty: hard

@@ -1,0 +1,6 @@
+# Claude Code Instructions
+1. Preserve existing OpenEnv environment and tests
+2. Always implement partial observability (no full info leaks)
+3. Rewards must stay in (0,1) range
+4. Test each mode (A/B/C/D) individually
+5. Use existing TaskConfig and grader patterns
