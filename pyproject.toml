@@ -21,6 +21,9 @@ dependencies = [
     "pyyaml>=6.0.1",
     "gymnasium>=0.28.0",
     "openenv-core>=0.2.3",
+    "simpy>=4.1.0",
+    "networkx>=3.2",
+    "scipy>=1.11.0",
 ]
 
 [project.optional-dependencies]
@@ -30,4 +33,4 @@ dev = ["pytest"]
 server = "server.app:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["sme_negotiator_env", "server"]
+packages = ["sme_negotiator_env", "treasury_agent_env", "server"]

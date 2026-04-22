@@ -33,6 +33,54 @@ tasks:
 ---
 spec_version: 1
 version: 0.1.0
+name: treasury-agent
+description: >
+  TreasuryAgent: POMDP RL environment for SME treasury & supply-chain finance.
+  Multiple SMEs, buyers, and vendors modeled as a NetworkX supply-chain graph.
+  SimPy discrete-event simulation drives invoice lifecycle and cash flow.
+  Agent interacts via structured JSON tool calls to six enterprise apps:
+  ERP, Bank, TReDS, Dynamic Discounting, Compliance, and Analytics.
+  Multi-objective reward: solvency + financing cost + vendor stress + concentration risk.
+type: text
+runtime: fastapi
+app: server.treasury_app:app
+port: 7862
+
+action:
+  type: object
+  description: >
+    Structured JSON tool call — one of six enterprise app endpoints.
+    Must include role, command_type, app, endpoint, and params.
+  schema_ref: TreasuryAction
+
+observation:
+  type: object
+  description: >
+    Partial observation (POMDP): KPI aggregates visible to agent.
+    Hidden state (buyer credit scores, vendor stress, invoice amounts) is not disclosed.
+  schema_ref: TreasuryObservation
+
+tasks:
+  - name: treasury-easy
+    description: >
+      Single SME with one buyer at 90-day terms.
+      Keep solvent over 90 days using ERP queries and overdraft.
+    difficulty: easy
+  - name: treasury-medium
+    description: >
+      Two SMEs, two buyers (60-75 day terms), TReDS and dynamic discounting available.
+      Minimize combined financing cost over 180 days.
+    difficulty: medium
+  - name: treasury-hard
+    description: >
+      Three SMEs, three buyers, full compliance risk (Section 43B(h)).
+      Samadhaan escalation available but relationship-damaging.
+      Minimize financing cost and concentration risk over 365 days.
+    difficulty: hard
+
+---
+spec_version: 1
+version: 0.1.0
 name: openenv-sme-multiagent-world
 description: >
   Multi-agent world environment for SME payment-term negotiations.
