@@ -115,3 +115,74 @@ tasks:
   - name: manager-orchestration
     description: "Mode D — ManagerAgent orchestrates multiple SME agents toward global solvency goals."
     difficulty: hard
+
+---
+spec_version: 1
+version: 0.1.0
+name: treasury-command-center
+description: >
+  TreasuryCommandCenter: advanced POMDP RL environment merging multi-agent world
+  scheduling (from openenv-sme-multiagent-world) with the full SimPy+NetworkX
+  treasury simulation (from treasury-agent). Five modes: SOLO (single Treasury AI
+  Officer), MULTI (per-SME agents with CTDE scheduling), COALITION (SME coordination
+  channel before tool calls), OVERSIGHT (OversightAgent flags portfolio risks),
+  MANAGER (ManagerAgent issues per-SME instructions). Six real enterprise tool apps:
+  ERP, Bank, TReDS, Dynamic Discounting, Compliance, Analytics. Supports GRPO/RLVR
+  training, DreamerV3-inspired world model, and PAIRED autocurriculum.
+type: text
+runtime: fastapi
+app: server.treasury_cc_app:app
+port: 7863
+
+action:
+  type: object
+  description: >
+    Unified TreasuryCCAction covering all 5 modes.
+    Role routing: treasury_officer/sme_agent → tool call (app+endpoint+params);
+    oversight_agent → flag_risky_smes + suggested_interventions;
+    manager_agent → instructions + query_analytics.
+    GRPO fields: group_id, reasoning_trace.
+  schema_ref: TreasuryCCAction
+
+observation:
+  type: object
+  description: >
+    Partial POMDP observation with KPIs for acting SME only.
+    Includes GRPO signals (grpo_group_rewards, normalized_advantage),
+    world model signals (belief_entropy, predicted_cash_buffer_30d),
+    and curriculum signals (curriculum_difficulty, scenario_complexity).
+  schema_ref: TreasuryCCObservation
+
+tasks:
+  # SOLO mode
+  - name: tcc-solo-easy
+    description: "Single Treasury Officer manages 1 SME over 90 days. ERP + Bank tools."
+    difficulty: easy
+  - name: tcc-solo-medium
+    description: "Single Treasury Officer manages 2 SMEs + TReDS/DD over 180 days."
+    difficulty: medium
+  - name: tcc-solo-hard
+    description: "Single Treasury Officer: 3 SMEs, full compliance risk, 365-day horizon."
+    difficulty: hard
+  # MULTI mode (CTDE)
+  - name: tcc-multi-medium
+    description: "Per-SME agents with CTDE scheduling; 2 SMEs, round-robin tool calls."
+    difficulty: medium
+  - name: tcc-multi-hard
+    description: "Per-SME agents; 3 SMEs, hostile buyers, full compliance, self-rewarding."
+    difficulty: hard
+  # COALITION mode
+  - name: tcc-coalition-medium
+    description: "SMEs coordinate via coalition channel before tool calls; 2 SMEs."
+    difficulty: medium
+  - name: tcc-coalition-hard
+    description: "Coalition + full compliance; 3 SMEs, adversarial buyers."
+    difficulty: hard
+  # OVERSIGHT mode
+  - name: tcc-oversight-hard
+    description: "OversightAgent reads analytics dashboard and flags at-risk SMEs."
+    difficulty: hard
+  # MANAGER mode
+  - name: tcc-manager-hard
+    description: "ManagerAgent issues per-SME instructions; 3 SMEs, 6-month horizon."
+    difficulty: hard
